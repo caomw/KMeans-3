@@ -30,7 +30,7 @@ int main() {
 
 	Mat_<double> mu;
 	vector<int> groups;
-	kmeans.cluster(samples, mu, groups);
+	kmeans.cluster(samples, 10, mu, groups);
 
 	cout << mu << endl;
 	for (int i = 0; i < groups.size(); ++i) {

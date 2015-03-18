@@ -13,7 +13,7 @@ KMeans::KMeans(int dimensions, int num_clusters) {
  * @param mu			クラスタの中心
  * @param groups		各サンプルが属するクラスタID
  */
-void KMeans::cluster(Mat_<double> samples, Mat_<double>& mu, vector<int>& groups) {
+void KMeans::cluster(Mat_<double> samples, int max_iterations, Mat_<double>& mu, vector<int>& groups) {
 	assert(samples.cols == dimensions);
 
 	mu = Mat_<double>(samples.rows, dimensions);
@@ -70,10 +70,11 @@ void KMeans::cluster(Mat_<double> samples, Mat_<double>& mu, vector<int>& groups
 
 	// 共分散行列の逆行列を計算する
 	Mat invCovar;
-	cv::invert(covar, invCovar, DECOMP_SVD);	// デフォルト(DECOMP_LU)だと、たまに全要素が0になってしまう
+	cv::invert(covar, invCovar, DECOMP_SVD);
 
 	bool updated = true;
-	while (updated) {
+	int count = 0;
+	for (int iter = 0; iter < max_iterations && updated; ++iter) {
 		updated = false;
 
 		// 各サンプルに最も近いクラスタを求める
