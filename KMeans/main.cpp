@@ -1,5 +1,10 @@
 ﻿/**
  * マハラノビス距離に基づいた、多変数のK-meansアルゴリズム。
+ * 実行結果：
+ *    [ 0.48,  0.42;
+ *     -0.48, -0.44]
+ *    0, 0, 0, 0, 0, 1, 1, 1, 1, 1
+ * 
  *
  * @author	Gen Nishida
  * @date	3/17/2015
@@ -34,8 +39,9 @@ int main() {
 
 	cout << mu << endl;
 	for (int i = 0; i < groups.size(); ++i) {
-		std::cout << groups[i] << std::endl;
+		std::cout << groups[i] << ",";
 	}
+	std::cout << std::endl;
 
 	return 0;
 }

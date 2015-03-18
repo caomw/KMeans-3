@@ -1,5 +1,6 @@
 ﻿/**
  * Mahalanobis distanceを使って、N次元サンプルをK-meansアルゴリズムでクラスタリングする。
+ * クラスタ中心の初期化には、K-means++アルゴリズムを使用する。
  *
  * @author	Gen Nishida
  * @date	3/17/2015
@@ -27,6 +28,9 @@ public:
 	void cluster(Mat_<double> samples, int max_iterations, Mat_<double>& mu, vector<int>& groups);
 
 private:
-	void computeMinMax(Mat_<double> samples, vector<double>& mins, vector<double>& maxs);
+	int findNearestCenter(const Mat_<double>& sample, const Mat_<double>& mu, double& min_dist);
+	int findNearestCenter(const Mat_<double>& sample, const Mat_<double>& mu, const Mat& invCovar);
+	int sampleFromCdf(std::vector<double> &cdf);
+	int sampleFromPdf(std::vector<double> &pdf);
 };
 
