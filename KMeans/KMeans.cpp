@@ -27,11 +27,9 @@ void KMeans::cluster(Mat_<double> samples, Mat_<double>& mu, vector<int>& groups
 	mu = Mat_<double>(num_clusters, dimensions);
 	for (int j = 0; j < num_clusters; ++j) {
 		for (int k = 0; k < dimensions; ++k) {
-			mu(j, k) = ((double)rand() / RAND_MAX) * (maxs[k] - mins[k]) + mins[k];
+			mu(j, k) = (((double)rand() / RAND_MAX) * 0.5 + 0.25) * (maxs[k] - mins[k]) + mins[k];
 		}
 	}
-
-	std::cout << clusters << std::endl;
 
 	// 初期クラスタリング（最初の１回だけ、Euclidian距離を使用してクラスタリング）
 	{
@@ -57,14 +55,13 @@ void KMeans::cluster(Mat_<double> samples, Mat_<double>& mu, vector<int>& groups
 		}
 
 		// クラスタ中心を更新する
-		clusters = Mat_<double>::zeros(num_clusters, dimensions);
+		mu = Mat_<double>::zeros(num_clusters, dimensions);
 		for (int i = 0; i < samples.rows; ++i) {
 			for (int k = 0; k < dimensions; ++k) {
 				mu(groups[i], k) += samples(i, k) / (double)num_members[groups[i]];
 			}
 		}
 	}
-
 
 	// サンプルの共分散行列を計算する
 	Mat covar, mean;
@@ -73,7 +70,7 @@ void KMeans::cluster(Mat_<double> samples, Mat_<double>& mu, vector<int>& groups
 
 	// 共分散行列の逆行列を計算する
 	Mat invCovar;
-	cv::invert(covar, invCovar);
+	cv::invert(covar, invCovar, DECOMP_SVD);	// デフォルト(DECOMP_LU)だと、たまに全要素が0になってしまう
 
 	bool updated = true;
 	while (updated) {

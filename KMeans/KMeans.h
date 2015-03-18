@@ -1,3 +1,11 @@
+﻿/**
+ * Mahalanobis distanceを使って、N次元サンプルをK-meansアルゴリズムでクラスタリングする。
+ *
+ * @author	Gen Nishida
+ * @date	3/17/2015
+ * @version	1.0
+ */
+
 #pragma once
 
 #include <opencv/cv.h>
