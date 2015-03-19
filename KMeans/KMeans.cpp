@@ -1,9 +1,8 @@
 ﻿#include "KMeans.h"
 #include <assert.h>
 
-KMeans::KMeans(int dimensions, int num_clusters) {
+KMeans::KMeans(int dimensions) {
 	this->dimensions = dimensions;
-	this->num_clusters = num_clusters;
 }
 
 /**
@@ -11,9 +10,10 @@ KMeans::KMeans(int dimensions, int num_clusters) {
  *
  * @param samples		サンプルデータ
  * @param mu			クラスタの中心
- * @param groups		各サンプルが属するクラスタID
+ * @param groups [out]	各サンプルが属するクラスタID
+ * @param aic [out]		Akaike information criteria
  */
-void KMeans::cluster(Mat_<double> samples, int max_iterations, Mat_<double>& mu, vector<int>& groups) {
+void KMeans::cluster(int num_clusters, Mat_<double> samples, int max_iterations, Mat_<double>& mu, vector<int>& groups, double& aic) {
 	assert(samples.cols == dimensions);
 
 	mu = Mat_<double>(num_clusters, dimensions);
@@ -98,34 +98,28 @@ void KMeans::cluster(Mat_<double> samples, int max_iterations, Mat_<double>& mu,
 			}
 		}
 	}
+
+	aic = computeAIC(samples, mu, groups, invCovar);
 }
 
 /**
- * 与えられたサンプルに対して、ユークリッド距離を使って、最も近いクラスタ中心のIDを返却する。
+ * Akaike information criteriaを計算する。
+ * AIC = Sum(ln(dist^2) + 2k
  *
- * @param sample			サンプル
- * @param mu				クラスタ中心のリスト
- * @param min_dist [OUT]	最近傍クラスタへの距離
- * @return					最近傍のクラスタ中心のID
+ * @param sample	サンプル
+ * @param mu		クラスタ中心
+ * @param groups	最近傍のクラスタID
+ * @return			AIC
  */
-/*
-int KMeans::findNearestCenter(const Mat_<double>& sample, const Mat_<double>& mu, double& min_dist) {
-	min_dist = std::numeric_limits<double>::max();
-
-	int group_id = -1;
-
-	for (int j = 0; j < mu.rows; ++j) {
-		double d = norm(sample - mu.row(j));
-
-		if (d < min_dist) {
-			min_dist = d;
-			group_id = j;
-		}
+double KMeans::computeAIC(Mat_<double> samples, Mat_<double>& mu, vector<int>& groups, const Mat& invCovar) {
+	double sum_dist = 0.0;
+	for (int i = 0; i < samples.rows; ++i) {
+		double dist = cv::Mahalanobis(samples.row(i), mu.row(groups[i]), invCovar);
+		sum_dist += dist * dist;
 	}
 
-	return group_id;
+	return sum_dist + 2 * mu.rows * mu.cols;
 }
-*/
 
 /**
  * 与えられたサンプルに対して、Mahalanobis距離を使って、最も近いクラスタ中心のIDを返却する。

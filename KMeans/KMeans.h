@@ -23,13 +23,14 @@ private:
 
 
 public:
-	KMeans(int dimensions, int num_clusters);
+	KMeans(int dimensions);
 
-	void cluster(Mat_<double> samples, int max_iterations, Mat_<double>& mu, vector<int>& groups);
+	void cluster(int num_clusters, Mat_<double> samples, int max_iterations, Mat_<double>& mu, vector<int>& groups, double& aic);
 
 private:
 	//int findNearestCenter(const Mat_<double>& sample, const Mat_<double>& mu, double& min_dist);
 	int findNearestCenter(const Mat_<double>& sample, const Mat_<double>& mu, const Mat& invCovar, double& min_dist);
+	double computeAIC(Mat_<double> samples, Mat_<double>& mu, vector<int>& groups, const Mat& invCovar);
 	int sampleFromCdf(std::vector<double> &cdf);
 	int sampleFromPdf(std::vector<double> &pdf);
 };
